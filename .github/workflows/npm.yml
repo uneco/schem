@@ -15,13 +15,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v2
       with:
-        node-version: '12.x'
-        registry-url: 'https://registry.npmjs.org'
-    - run: npm install
-    - run: npm run test
-    - run: npm run build
-    - run: 'npm publish --access public || :'
+        node-version: '16'
+        cache: 'yarn'
+    - run: npm i -g yarn
+    - run: yarn install
+    - run: yarn run build
+    - run: yarn run lint
+    - run: yarn run test
+    - run: |
+        yarn workspaces foreach npm publish --tolerate-republish --access public || :
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

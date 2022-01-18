@@ -5,7 +5,6 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "lib",
-    "composite": true,
     "strict": true,
     "declaration": true,
     "noUnusedLocals": true,
