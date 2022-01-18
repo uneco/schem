@@ -1,6 +1,6 @@
 {
   "name": "@schem/api-endpoint",
-  "version": "1.0.0-preview3",
+  "version": "1.0.0-preview4",
   "description": "API endpoint specification based on schem",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -25,6 +25,6 @@
     "node": ">=10.4.0"
   },
   "dependencies": {
-    "@schem/core": "1.0.0-preview3"
+    "@schem/core": "1.0.0-preview4"
   }
 }

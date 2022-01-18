@@ -20,11 +20,11 @@ jobs:
         node-version: '16'
         cache: 'yarn'
     - run: npm i -g yarn
+    - run: yarn config set "npmRegistries['https://registry.yarnpkg.com'].npmAuthToken" "${AUTH_TOKEN}"
+      env:
+        AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     - run: yarn install
     - run: yarn run build
     - run: yarn run lint
     - run: yarn run test
-    - run: |
-        yarn workspaces foreach npm publish --tolerate-republish --access public || :
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - run: yarn run publish
