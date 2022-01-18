@@ -1,0 +1,45 @@
+{
+  "name": "@schem/api-endpoint",
+  "version": "1.0.0-preview1",
+  "description": "API endpoint specification based on schem",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "files": [
+    "lib"
+  ],
+  "keywords": [
+    "api"
+  ],
+  "author": "uneco <aoki@u-ne.co> (https://u-ne.co)",
+  "homepage": "https://github.com/uneco/schem",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/uneco/schem.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=10.4.0"
+  },
+  "dependencies": {
+    "@schem/core": "1.0.0-preview1"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.9",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.14.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.2.2"
+  }
+}
