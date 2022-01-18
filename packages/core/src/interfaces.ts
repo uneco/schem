@@ -111,18 +111,18 @@ export interface Combine {
   oneOf <T extends readonly SchemaDefinition<unknown>[]> (definitions: T): SchemaIdentity<Pure<T[number]>>
 }
 
-export type Field<T> = {
+export type FieldLike<T> = {
   type: string;
   options?: Record<string, unknown>;
   __type?: T & never;
+}
+
+export type Field<T> = FieldLike<T> & {
   nullable (): Field<T | null>;
   nonnullable (): Field<PropertyNonNullable<T>>;
 }
 
-export type ObjectField<T> = {
-  type: string;
-  options?: Record<string, unknown>;
-  __type?: T & never;
+export type ObjectField<T> = FieldLike<T> & {
   nullable (): ObjectField<T | null>;
   nonnullable (): ObjectField<PropertyNonNullable<T>>;
   allowAdditionalProperties(): ObjectField<T>;
@@ -143,7 +143,7 @@ export type FieldBuilder = {
   array (type: 'boolean', options?: BooleanType, arrayOptions?: ArrayType<boolean>): Field<boolean[]>;
   array (type: 'null', options?: NullType, arrayOptions?: ArrayType<null>): Field<null[]>;
   array <T, U> (type: 'object', itemDefinition: T, itemDefinitionOptional?: U, arrayOptions?: ArrayType<T>): Field<Array<ObjectSchema<T, U>>>;
-  array <T> (field: Field<T>, arrayOptions?: ArrayType<T>): Field<T[]>;
+  array <T> (field: FieldLike<T>, arrayOptions?: ArrayType<T>): Field<T[]>;
 
   object <T, U> (definitionSchema: SchemaDefinition<ObjectSchema<T, U>>, objectOptions?: ObjectType<T>): ObjectField<ObjectSchema<T, U>>;
   object <T, U> (definition: T, definitionOptional?: U, objectOptions?: ObjectType<T>): ObjectField<ObjectSchema<T, U>>;
