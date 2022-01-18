@@ -138,11 +138,6 @@ export type FieldBuilder = {
   const <T extends string | number | boolean> (value: T, options?: Metadata): Field<T>;
   enum <T extends keyof EnumerableTypeMap, X extends readonly EnumerableTypeMap[T][]> (type: T, values: X, options?: EnumType<T>): Field<X[number]>;
 
-  array (type: 'string', options?: StringType, arrayOptions?: ArrayType<string>): Field<string[]>;
-  array (type: 'number' | 'integer', options?: NumberType, arrayOptions?: ArrayType<number>): Field<number[]>;
-  array (type: 'boolean', options?: BooleanType, arrayOptions?: ArrayType<boolean>): Field<boolean[]>;
-  array (type: 'null', options?: NullType, arrayOptions?: ArrayType<null>): Field<null[]>;
-  array <T, U> (type: 'object', itemDefinition: T, itemDefinitionOptional?: U, arrayOptions?: ArrayType<T>): Field<Array<ObjectSchema<T, U>>>;
   array <T> (field: FieldLike<T>, arrayOptions?: ArrayType<T>): Field<T[]>;
 
   object <T, U> (definitionSchema: SchemaDefinition<ObjectSchema<T, U>>, objectOptions?: ObjectType<T>): ObjectField<ObjectSchema<T, U>>;

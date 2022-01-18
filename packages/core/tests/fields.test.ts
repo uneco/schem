@@ -46,6 +46,123 @@ describe('defineObjectSchema', () => {
     })).not.toThrow()
   })
 
+  it('real', () => {
+    const avatarDefinition = {
+      required: {
+        id: field.integer(),
+        name: field.string()
+      },
+      optional: {
+        image: field.string()
+      }
+    }
+
+    const avatarDefinitionWithSubtypes = {
+      required: avatarDefinition.required,
+      optional: {
+        ...avatarDefinition.optional,
+        subtypes: field.array(field.object(avatarDefinition.required, avatarDefinition.optional))
+      }
+    }
+
+    const launcherCapabilities = {
+      profile: field.boolean(),
+      avatar: field.boolean(),
+      manual: field.boolean(),
+      benchmark: field.boolean(),
+      setting: field.boolean(),
+      member: field.boolean()
+    }
+
+    const launcherMenuTitleOverrides = {
+      profile: field.string(),
+      avatar: field.string(),
+      manual: field.string(),
+      benchmark: field.string(),
+      setting: field.string(),
+      member: field.string()
+    }
+
+    const resourceSigning = {
+      queryParameters: field.string(),
+      origins: field.array(field.string())
+    }
+
+    expect(() => {
+      defineObjectSchema({
+        body: field.object({
+          venues: field.array(field.object({
+            id: field.string(),
+            name: field.string(),
+            events: field.array(field.object({
+              id: field.string(),
+              name: field.string(),
+              primaryColor: field.string(),
+              avatars: field.array(field.object(avatarDefinitionWithSubtypes.required, avatarDefinitionWithSubtypes.optional), {
+                title: 'アバター定義'
+              }),
+              themeImages: field.object({
+                logo: field.string(),
+                background: field.string(),
+                main: field.string()
+              }, {
+                loading: field.string()
+              }),
+              sessions: field.array(field.object({
+                id: field.string(),
+                name: field.string(),
+                startedAt: field.integer()
+              }, {
+                voiceStreamerConfig: field.object({
+                  type: field.enum('string', [
+                    'none',
+                    'agora',
+                    'sora'
+                  ], {
+                    title: '音声通話タイプ'
+                  }),
+                  channel: field.string({
+                    title: '音声チャンネル'
+                  })
+                }, {})
+              }))
+            }, {
+              topic: field.string(),
+              description: field.string(),
+              startAt: field.integer(),
+              openAt: field.integer(),
+              closeAt: field.integer(),
+              launcherCapabilities: field.object({}, launcherCapabilities),
+              launcherMenuTitleOverrides: field.object({}, launcherMenuTitleOverrides),
+              launchConfigPath: field.string(),
+              profileImageDefinitions: field.array(field.object({
+                title: field.string(),
+                id: field.string(),
+                type: field.string()
+              }, {}), {
+                title: 'プロフィール画像定義'
+              }),
+              memberPageURL: field.string({
+                title: 'メンバーページURL'
+              }),
+              manualPageURL: field.string({
+                title: 'マニュアルページURL'
+              }),
+              appProject: field.object({
+                companyName: field.string(),
+                productName: field.string()
+              }, {}, {
+                title: 'App Project 設定'
+              })
+            }))
+          }, {}))
+        }, {
+          resourceSigning: field.object(resourceSigning, {})
+        })
+      })
+    }).not.toThrow()
+  })
+
   it('toJSONSchema', () => {
     const schema = defineObjectSchema({
       stringRequired: field.string(),
@@ -64,37 +181,20 @@ describe('defineObjectSchema', () => {
       enumIntegerRequired: field.enum('integer', [1, 2, 3]),
       enumIntegerRequiredNullable: field.enum('integer', [1, 2, 3]).nullable(),
 
-      arrayStringRequired: field.array('string'),
-      arrayStringRequiredNullable: field.array('string').nullable(),
-      arrayNumberRequired: field.array('number'),
-      arrayNumberRequiredNullable: field.array('number').nullable(),
-      arrayIntegerRequired: field.array('integer'),
-      arrayIntegerRequiredNullable: field.array('integer').nullable(),
-      arrayBooleanRequired: field.array('boolean'),
-      arrayBooleanRequiredNullable: field.array('boolean').nullable(),
-      arrayNullRequired: field.array('null'),
-      arrayNullRequiredNullable: field.array('null').nullable(),
-      arrayObjectRequired: field.array('object', {
-        a: field.string()
-      }),
-      arrayObjectRequiredNullable: field.array('object', {
-        a: field.string()
-      }).nullable(),
-
-      arrayStringFieldRequired: field.array(field.string()),
-      arrayStringFieldRequiredNullable: field.array(field.string()).nullable(),
-      arrayNumberFieldRequired: field.array(field.number()),
-      arrayNumberFieldRequiredNullable: field.array(field.number()).nullable(),
-      arrayIntegerFieldRequired: field.array(field.integer()),
-      arrayIntegerFieldRequiredNullable: field.array(field.integer()).nullable(),
-      arrayBooleanFieldRequired: field.array(field.boolean()),
-      arrayBooleanFieldRequiredNullable: field.array(field.boolean()).nullable(),
-      arrayNullFieldRequired: field.array(field.null()),
-      arrayNullFieldRequiredNullable: field.array(field.null()).nullable(),
-      arrayObjectFieldRequired: field.array(field.object({
+      arrayStringRequired: field.array(field.string()),
+      arrayStringRequiredNullable: field.array(field.string()).nullable(),
+      arrayNumberRequired: field.array(field.number()),
+      arrayNumberRequiredNullable: field.array(field.number()).nullable(),
+      arrayIntegerRequired: field.array(field.integer()),
+      arrayIntegerRequiredNullable: field.array(field.integer()).nullable(),
+      arrayBooleanRequired: field.array(field.boolean()),
+      arrayBooleanRequiredNullable: field.array(field.boolean()).nullable(),
+      arrayNullRequired: field.array(field.null()),
+      arrayNullRequiredNullable: field.array(field.null()).nullable(),
+      arrayObjectRequired: field.array(field.object({
         a: field.string()
       }, {})),
-      arrayObjectFieldRequiredNullable: field.array(field.object({
+      arrayObjectRequiredNullable: field.array(field.object({
         a: field.string()
       }, {})).nullable(),
 
@@ -123,37 +223,21 @@ describe('defineObjectSchema', () => {
       enumNumberOptionalNullable: field.enum('number', [1, 2, 3]).nullable(),
       enumIntegerOptional: field.enum('integer', [1, 2, 3]),
       enumIntegerOptionalNullable: field.enum('integer', [1, 2, 3]).nullable(),
-      arrayStringOptional: field.array('string'),
-      arrayStringOptionalNullable: field.array('string').nullable(),
-      arrayNumberOptional: field.array('number'),
-      arrayNumberOptionalNullable: field.array('number').nullable(),
-      arrayIntegerOptional: field.array('integer'),
-      arrayIntegerOptionalNullable: field.array('integer').nullable(),
-      arrayBooleanOptional: field.array('boolean'),
-      arrayBooleanOptionalNullable: field.array('boolean').nullable(),
-      arrayNullOptional: field.array('null'),
-      arrayNullOptionalNullable: field.array('null').nullable(),
-      arrayObjectOptional: field.array('object', {
-        a: field.string()
-      }),
-      arrayObjectOptionalNullable: field.array('object', {
-        a: field.string()
-      }).nullable(),
 
-      arrayStringFieldOptional: field.array(field.string()),
-      arrayStringFieldOptionalNullable: field.array(field.string()).nullable(),
-      arrayNumberFieldOptional: field.array(field.number()),
-      arrayNumberFieldOptionalNullable: field.array(field.number()).nullable(),
-      arrayIntegerFieldOptional: field.array(field.integer()),
-      arrayIntegerFieldOptionalNullable: field.array(field.integer()).nullable(),
-      arrayBooleanFieldOptional: field.array(field.boolean()),
-      arrayBooleanFieldOptionalNullable: field.array(field.boolean()).nullable(),
-      arrayNullFieldOptional: field.array(field.null()),
-      arrayNullFieldOptionalNullable: field.array(field.null()).nullable(),
-      arrayObjectFieldOptional: field.array(field.object({
+      arrayStringOptional: field.array(field.string()),
+      arrayStringOptionalNullable: field.array(field.string()).nullable(),
+      arrayNumberOptional: field.array(field.number()),
+      arrayNumberOptionalNullable: field.array(field.number()).nullable(),
+      arrayIntegerOptional: field.array(field.integer()),
+      arrayIntegerOptionalNullable: field.array(field.integer()).nullable(),
+      arrayBooleanOptional: field.array(field.boolean()),
+      arrayBooleanOptionalNullable: field.array(field.boolean()).nullable(),
+      arrayNullOptional: field.array(field.null()),
+      arrayNullOptionalNullable: field.array(field.null()).nullable(),
+      arrayObjectOptional: field.array(field.object({
         a: field.string()
       }, {})),
-      arrayObjectFieldOptionalNullable: field.array(field.object({
+      arrayObjectOptionalNullable: field.array(field.object({
         a: field.string()
       }, {})).nullable(),
 
@@ -507,242 +591,6 @@ describe('defineObjectSchema', () => {
             { type: 'null' }
           ]
         },
-        arrayStringFieldRequired: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
-        },
-        arrayStringFieldRequiredNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayNumberFieldRequired: {
-          type: 'array',
-          items: {
-            type: 'number'
-          }
-        },
-        arrayNumberFieldRequiredNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'number'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayIntegerFieldRequired: {
-          type: 'array',
-          items: {
-            type: 'integer'
-          }
-        },
-        arrayIntegerFieldRequiredNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'integer'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayBooleanFieldRequired: {
-          type: 'array',
-          items: {
-            type: 'boolean'
-          }
-        },
-        arrayBooleanFieldRequiredNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'boolean'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayNullFieldRequired: {
-          type: 'array',
-          items: {
-            type: 'null'
-          }
-        },
-        arrayNullFieldRequiredNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'null'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayObjectFieldRequired: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {},
-            required: []
-          }
-        },
-        arrayObjectFieldRequiredNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {},
-                required: []
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayStringFieldOptional: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
-        },
-        arrayStringFieldOptionalNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayNumberFieldOptional: {
-          type: 'array',
-          items: {
-            type: 'number'
-          }
-        },
-        arrayNumberFieldOptionalNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'number'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayIntegerFieldOptional: {
-          type: 'array',
-          items: {
-            type: 'integer'
-          }
-        },
-        arrayIntegerFieldOptionalNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'integer'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayBooleanFieldOptional: {
-          type: 'array',
-          items: {
-            type: 'boolean'
-          }
-        },
-        arrayBooleanFieldOptionalNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'boolean'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayNullFieldOptional: {
-          type: 'array',
-          items: {
-            type: 'null'
-          }
-        },
-        arrayNullFieldOptionalNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'null'
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
-        arrayObjectFieldOptional: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {},
-            required: []
-          }
-        },
-        arrayObjectFieldOptionalNullable: {
-          oneOf: [
-            {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {},
-                required: []
-              }
-            },
-            {
-              type: 'null'
-            }
-          ]
-        },
         objectRequired: {
           type: 'object',
           properties: {
@@ -814,18 +662,6 @@ describe('defineObjectSchema', () => {
         'arrayNullRequiredNullable',
         'arrayObjectRequired',
         'arrayObjectRequiredNullable',
-        'arrayStringFieldRequired',
-        'arrayStringFieldRequiredNullable',
-        'arrayNumberFieldRequired',
-        'arrayNumberFieldRequiredNullable',
-        'arrayIntegerFieldRequired',
-        'arrayIntegerFieldRequiredNullable',
-        'arrayBooleanFieldRequired',
-        'arrayBooleanFieldRequiredNullable',
-        'arrayNullFieldRequired',
-        'arrayNullFieldRequiredNullable',
-        'arrayObjectFieldRequired',
-        'arrayObjectFieldRequiredNullable',
         'objectRequired',
         'objectRequiredNullable',
         'objectRequiredFromSchema'
@@ -866,18 +702,6 @@ describe('defineObjectSchema', () => {
       arrayNullRequiredNullable: null,
       arrayObjectRequired: [{ a: 'a' }],
       arrayObjectRequiredNullable: null,
-      arrayStringFieldRequired: ['a'],
-      arrayStringFieldRequiredNullable: null,
-      arrayNumberFieldRequired: [1],
-      arrayNumberFieldRequiredNullable: null,
-      arrayIntegerFieldRequired: [1],
-      arrayIntegerFieldRequiredNullable: null,
-      arrayBooleanFieldRequired: [true],
-      arrayBooleanFieldRequiredNullable: null,
-      arrayNullFieldRequired: [null],
-      arrayNullFieldRequiredNullable: null,
-      arrayObjectFieldRequired: [{ a: 'a' }],
-      arrayObjectFieldRequiredNullable: null,
       objectRequired: { a: 'a' },
       objectRequiredNullable: null,
       objectRequiredFromSchema: { a: 'a ' }
@@ -887,27 +711,27 @@ describe('defineObjectSchema', () => {
     typeCheck({
       ...fields,
       // @ts-expect-error
-      arrayNullFieldRequired: [1]
+      arrayNullRequired: [1]
     })
     typeCheck({
       ...fields,
       // @ts-expect-error
-      arrayBooleanFieldRequired: [1]
+      arrayBooleanRequired: [1]
     })
     typeCheck({
       ...fields,
       // @ts-expect-error
-      arrayStringFieldRequired: [1]
+      arrayStringRequired: [1]
     })
     typeCheck({
       ...fields,
       // @ts-expect-error
-      arrayIntegerFieldRequired: ['a']
+      arrayIntegerRequired: ['a']
     })
     typeCheck({
       ...fields,
       // @ts-expect-error
-      arrayNumberFieldRequired: ['a']
+      arrayNumberRequired: ['a']
     })
   })
 

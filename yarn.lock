@@ -714,11 +714,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@schem/api-endpoint@workspace:packages/api-endpoint"
   dependencies:
-    "@schem/core": 1.0.0-preview7
+    "@schem/core": 1.0.0-preview8
   languageName: unknown
   linkType: soft
 
-"@schem/core@1.0.0-preview7, @schem/core@workspace:packages/core":
+"@schem/core@1.0.0-preview8, @schem/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@schem/core@workspace:packages/core"
   dependencies:

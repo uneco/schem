@@ -221,8 +221,15 @@ export function assertValid <T> (input: DirtyProps<T>, schema: SchemaIdentity<T>
 export const field: FieldBuilder = new Proxy({} as FieldBuilder, {
   get (_, key) {
     const getFieldValue = (first: string | Field<unknown>, rest: any[]): Field<unknown> & { args: any[] } => {
-      if (key === 'array' && typeof first === 'object' && first !== null && ('type' in first)) {
-        return getFieldValue(first.type, [first.options ?? {}, ...rest])
+      if (key === 'array' && typeof first === 'object' && first !== null) {
+        if (!('type' in first)) {
+          throw new Error('invalid array field value: type is not set')
+        }
+        if (typeof first.type !== 'string') {
+          throw new Error(`invalid array field value: type is not string (${first.type})`)
+        }
+        const [required, optional] = (first as unknown as { args: [any, any]}).args
+        return getFieldValue(first.type, [required, optional ?? {}, first.options ?? {}, ...rest])
       }
 
       const type = (key === 'array') ? `${first}[]` : key.toString()
