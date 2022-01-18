@@ -221,7 +221,7 @@ export function assertValid <T> (input: DirtyProps<T>, schema: SchemaIdentity<T>
 export const field: FieldBuilder = new Proxy({} as FieldBuilder, {
   get (_, key) {
     const fn = (first: string | Field<unknown>, rest: any[]): Field<unknown> & { args: any[] } => {
-      if (typeof first === 'object' && first !== null && ('type' in first)) {
+      if (key === 'array' && typeof first === 'object' && first !== null && ('type' in first)) {
         return fn(first.type, [first.options ?? {}, ...rest])
       }
 
@@ -281,8 +281,8 @@ export function defineObjectSchema <
     const { type, args, options } = (mergedFields as any)[key] as { type: string; args: any[]; options?: any }
     const nullable = type.endsWith('@')
     const optional = Boolean(options?.optional)
-    const rawType = type.replace(/@+$/, '')
-    const method = rawType.endsWith('[]') ? 'array' : rawType
+    const originalType = type.replace(/@+$/, '')
+    const method = originalType.endsWith('[]') ? 'array' : originalType
     const fn = (b as any)[method] as (...args: any[]) => any
 
     const overrideOption = (optionArgs: any[], index: number, nullable: boolean, optional: boolean) => {
@@ -296,7 +296,7 @@ export function defineObjectSchema <
 
     const newArgs = [...args]
 
-    if (rawType === 'object') {
+    if (originalType === 'object') {
       if ('toJSONSchema' in args[0]) {
         newArgs[0] = args[0]
         newArgs[1] = args[1]
@@ -306,7 +306,7 @@ export function defineObjectSchema <
       }
     }
 
-    if (rawType === 'object[]') {
+    if (originalType === 'object[]') {
       newArgs[1] = defineObjectSchema(args[1], args[2])
       newArgs[2] = args[3]
     }
@@ -318,11 +318,11 @@ export function defineObjectSchema <
     }
 
     for (const [index, keys] of Object.entries(maps)) {
-      if (keys.includes(rawType)) {
+      if (keys.includes(originalType)) {
         const i = parseInt(index)
         return fn(key, ...overrideOption(newArgs, i, nullable, optional))
       }
     }
-    throw new Error(`unsupported type: ${rawType}`)
+    throw new Error(`unsupported type: ${originalType}`)
   }, defineSchema()) as any
 }

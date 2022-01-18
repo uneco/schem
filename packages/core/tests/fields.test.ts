@@ -19,7 +19,32 @@ it('assertValid', () => {
   expect(() => assertValid({ name: 1 }, schema)).toThrow(ValidationError)
 })
 
-describe('defineSchema', () => {
+describe('defineObjectSchema', () => {
+  it('nested', () => {
+    expect(() => defineObjectSchema({
+      path: field.string(),
+      id: field.integer({
+        minimum: 0
+      }),
+      data: field.object({
+        createdAt: field.integer({
+          title: '発生時刻'
+        }),
+        type: field.string({
+          title: 'タイプ'
+        }),
+        qualifier: field.string({
+          title: '修飾子'
+        }),
+        payload: field.string({
+          title: 'ペイロード'
+        })
+      }, {}, {
+        title: 'データ'
+      })
+    })).not.toThrow()
+  })
+
   it('toJSONSchema', () => {
     const schema = defineObjectSchema({
       stringRequired: field.string(),
