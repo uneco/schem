@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { validate, assertValid, Pure, ValidationError, combineSchema, defineObjectSchema, field } from '../src/index'
 
 it('validate', () => {
@@ -832,7 +833,12 @@ describe('defineObjectSchema', () => {
     })
 
     type SchemaType = Pure<typeof schema>
-    const testSchema: SchemaType = {
+
+    function typeCheck (s: SchemaType) {
+      return s
+    }
+
+    const fields = {
       stringRequired: 'a',
       stringRequiredNullable: null,
       numberRequired: 1,
@@ -877,8 +883,32 @@ describe('defineObjectSchema', () => {
       objectRequiredFromSchema: { a: 'a ' }
     }
 
-    // only type tesing
-    expect(testSchema).toBeTruthy()
+    typeCheck(fields)
+    typeCheck({
+      ...fields,
+      // @ts-expect-error
+      arrayNullFieldRequired: [1]
+    })
+    typeCheck({
+      ...fields,
+      // @ts-expect-error
+      arrayBooleanFieldRequired: [1]
+    })
+    typeCheck({
+      ...fields,
+      // @ts-expect-error
+      arrayStringFieldRequired: [1]
+    })
+    typeCheck({
+      ...fields,
+      // @ts-expect-error
+      arrayIntegerFieldRequired: ['a']
+    })
+    typeCheck({
+      ...fields,
+      // @ts-expect-error
+      arrayNumberFieldRequired: ['a']
+    })
   })
 
   it('omit', () => {

@@ -220,16 +220,17 @@ export function assertValid <T> (input: DirtyProps<T>, schema: SchemaIdentity<T>
 
 export const field: FieldBuilder = new Proxy({} as FieldBuilder, {
   get (_, key) {
-    const fn = (first: string | Field<unknown>, rest: any[]): Field<unknown> & { args: any[] } => {
+    const getFieldValue = (first: string | Field<unknown>, rest: any[]): Field<unknown> & { args: any[] } => {
       if (key === 'array' && typeof first === 'object' && first !== null && ('type' in first)) {
-        return fn(first.type, [first.options ?? {}, ...rest])
+        return getFieldValue(first.type, [first.options ?? {}, ...rest])
       }
 
       const type = (key === 'array') ? `${first}[]` : key.toString()
 
-      return {
+      const fieldValue = {
         type,
         args: [first, ...rest],
+        identical: () => fieldValue,
         nullable: () => {
           return (field as any)[type.replace(/@*$/, '@')](first, ...rest)
         },
@@ -251,9 +252,11 @@ export const field: FieldBuilder = new Proxy({} as FieldBuilder, {
           }
         })
       }
+
+      return fieldValue
     }
 
-    return (first: string, ...rest: any[]) => fn(first, rest)
+    return (first: string, ...rest: any[]) => getFieldValue(first, rest)
   }
 })
 

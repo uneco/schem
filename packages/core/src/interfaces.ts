@@ -114,7 +114,7 @@ export interface Combine {
 export type FieldLike<T> = {
   type: string;
   options?: Record<string, unknown>;
-  __type?: T & never;
+  identical (): T;
 }
 
 export type Field<T> = FieldLike<T> & {
