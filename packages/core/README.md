@@ -5,13 +5,13 @@ A library designed to implement both TypeScript Interface and json-schema.
 # install
 
 ```bash
-npm install schem
+npm install @schem/core
 ```
 
 or
 
 ```bash
-yarn add schem
+yarn add @schem/core
 ```
 
 # Usage
