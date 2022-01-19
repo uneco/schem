@@ -1,4 +1,4 @@
-# schema
+# @schem/core
 
 A library designed to implement both TypeScript Interface and json-schema.
 
