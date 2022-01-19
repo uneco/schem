@@ -1,4 +1,4 @@
-# schema-api-endpoint
+# @schem/api-endpoint
 
 API endpoint specification based on @schem/core
 
