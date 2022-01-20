@@ -46,6 +46,28 @@ describe('defineObjectSchema', () => {
     })).not.toThrow()
   })
 
+  it('object nullable', () => {
+    expect(defineObjectSchema({
+      a: field.object({
+      }, {}).nullable()
+    }).toJSONSchema()).toStrictEqual({
+      type: 'object',
+      properties: {
+        a: {
+          oneOf: [{
+            type: 'object',
+            properties: {
+            },
+            required: []
+          }, {
+            type: 'null'
+          }]
+        }
+      },
+      required: ['a']
+    })
+  })
+
   it('toJSONSchema', () => {
     const schema = defineObjectSchema({
       stringRequired: field.string(),
@@ -489,11 +511,15 @@ describe('defineObjectSchema', () => {
           required: ['a']
         },
         objectRequiredNullable: {
-          type: 'object',
-          properties: {
-            a: { type: 'string' }
-          },
-          required: ['a']
+          oneOf: [{
+            type: 'object',
+            properties: {
+              a: { type: 'string' }
+            },
+            required: ['a']
+          }, {
+            type: 'null'
+          }]
         },
         objectRequiredFromSchema: {
           type: 'object',
@@ -503,11 +529,15 @@ describe('defineObjectSchema', () => {
           required: ['a']
         },
         objectOptionalNullable: {
-          type: 'object',
-          properties: {
-            a: { type: 'string' }
-          },
-          required: ['a']
+          oneOf: [{
+            type: 'object',
+            properties: {
+              a: { type: 'string' }
+            },
+            required: ['a']
+          }, {
+            type: 'null'
+          }]
         },
         objectOptionalFromSchema: {
           type: 'object',

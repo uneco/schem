@@ -129,14 +129,14 @@ function createContext <C> (properties: JSONSchema7['properties'] = {}, required
     }, [...required, ...(arrayOptions?.optional ? [] : [name])])
   }
 
-  function _object (name: string, options: any, objectOptions: GenericOptions): any {
+  function _object (name: string, schema: any, objectOptions: GenericOptions): any {
     return createContext({
       ...properties,
       [name]: orNull({
         type: 'object',
-        ...(options.toJSONSchema ? options.toJSONSchema() : options),
+        ...(schema.toJSONSchema ? schema.toJSONSchema() : schema),
         ...extractOptional(objectOptions)
-      }, options?.nullable ?? false)
+      }, objectOptions?.nullable ?? false)
     }, [...required, ...(objectOptions?.optional ? [] : [name])])
   }
 
@@ -330,7 +330,8 @@ export function defineObjectSchema <
     for (const [index, keys] of Object.entries(maps)) {
       if (keys.includes(originalType)) {
         const i = parseInt(index)
-        return fn(key, ...overrideOption(newArgs, i, nullable, optional))
+        const overriden = overrideOption(newArgs, i, nullable, optional)
+        return fn(key, ...overriden)
       }
     }
     throw new Error(`unsupported type: ${originalType}`)
